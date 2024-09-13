@@ -7,6 +7,6 @@ object Main {
     fun main(args: Array<String>) {
         val service = BirthdayService(EmployeeFileAdapter("employee_data.txt"))
         val date = args[0]
-        service.sendGreetings("employee_data.txt", XDate(date), "localhost", 25)
+        service.sendGreetings(XDate(date), "localhost", 25)
     }
 }

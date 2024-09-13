@@ -3,22 +3,22 @@ package it.xpug.kata.birthday_greetings
 import com.dumbster.smtp.SimpleSmtpServer
 import com.dumbster.smtp.SmtpMessage
 import it.xpug.kata.birthday_greetings.adapter.outbound.EmployeeFileAdapter
-import org.junit.After
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 class AcceptanceTest {
     private lateinit var birthdayService: BirthdayService
     private lateinit var mailServer: SimpleSmtpServer
 
-    @Before
+    @BeforeEach
     fun setUp() {
         mailServer = SimpleSmtpServer.start(NONSTANDARD_PORT)
         birthdayService = BirthdayService(EmployeeFileAdapter("employee_data.txt"))
     }
 
-    @After
+    @AfterEach
     fun tearDown() {
         mailServer.stop()
         Thread.sleep(200)
@@ -27,23 +27,31 @@ class AcceptanceTest {
     @Test
     @Throws(Exception::class)
     fun willSendGreetings_whenItsSomebodysBirthday() {
-        birthdayService.sendGreetings("employee_data.txt", XDate("2008/10/08"), "localhost", NONSTANDARD_PORT)
+        birthdayService.sendGreetings(XDate("2008/10/08"), "localhost", NONSTANDARD_PORT)
 
-        Assert.assertEquals("message not sent?", 1, mailServer.receivedEmailSize.toLong())
+        assertEquals(
+            1,
+            mailServer.receivedEmailSize.toLong(),
+            "message not sent?"
+        )
         val message = mailServer.receivedEmail.next() as SmtpMessage
-        Assert.assertEquals("Happy Birthday, dear John!", message.body)
-        Assert.assertEquals("Happy Birthday!", message.getHeaderValue("Subject"))
+        assertEquals("Happy Birthday, dear John!", message.body)
+        assertEquals("Happy Birthday!", message.getHeaderValue("Subject"))
         val recipients = message.getHeaderValues("To")
-        Assert.assertEquals(1, recipients.size.toLong())
-        Assert.assertEquals("john.doe@foobar.com", recipients[0].toString())
+        assertEquals(1, recipients.size.toLong())
+        assertEquals("john.doe@foobar.com", recipients[0].toString())
     }
 
     @Test
     @Throws(Exception::class)
     fun willNotSendEmailsWhenNobodysBirthday() {
-        birthdayService.sendGreetings("employee_data.txt", XDate("2008/01/01"), "localhost", NONSTANDARD_PORT)
+        birthdayService.sendGreetings(XDate("2008/01/01"), "localhost", NONSTANDARD_PORT)
 
-        Assert.assertEquals("what? messages?", 0, mailServer.receivedEmailSize.toLong())
+        assertEquals(
+            0,
+            mailServer.receivedEmailSize.toLong(),
+            "what? messages?"
+        )
     }
 
     companion object {
