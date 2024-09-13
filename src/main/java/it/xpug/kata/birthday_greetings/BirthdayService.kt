@@ -1,15 +1,16 @@
 package it.xpug.kata.birthday_greetings
 
 import it.xpug.kata.birthday_greetings.adapter.outbound.EmployeeFileAdapter
-import java.util.*
+import it.xpug.kata.birthday_greetings.application.port.inbound.BirthdayGreetingService
 import jakarta.mail.Message
 import jakarta.mail.Session
 import jakarta.mail.Transport
 import jakarta.mail.internet.InternetAddress
 import jakarta.mail.internet.MimeMessage
+import java.util.*
 
-class BirthdayService(val employeeFileAdapter: EmployeeFileAdapter) {
-    fun sendGreetings(xDate: XDate, smtpHost: String, smtpPort: Int) {
+class BirthdayService(val employeeFileAdapter: EmployeeFileAdapter) : BirthdayGreetingService {
+    override fun sendGreetings(xDate: XDate, smtpHost: String, smtpPort: Int) {
         employeeFileAdapter.getEmployees().forEach { employee ->
             if (employee.isBirthday(xDate)) {
                 val recipient = employee.email
