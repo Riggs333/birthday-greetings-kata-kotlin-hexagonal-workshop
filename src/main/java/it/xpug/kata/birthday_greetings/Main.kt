@@ -5,6 +5,6 @@ object Main {
     fun main(args: Array<String>) {
         val service = BirthdayService()
         val date = args.get(0)
-        service.sendGreetings("employee_data.txt", XDate(date), "localhost", 25)
+        service.sendGreetings(XDate(date), "localhost", 25)
     }
 }
