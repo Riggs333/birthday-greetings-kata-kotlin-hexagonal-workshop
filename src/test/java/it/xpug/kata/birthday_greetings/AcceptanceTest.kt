@@ -15,7 +15,7 @@ class AcceptanceTest {
     @Before
     fun setUp() {
         mailServer = SimpleSmtpServer.start(NONSTANDARD_PORT)
-        birthdayService = BirthdayService(EmployeeFileAdapter())
+        birthdayService = BirthdayService(EmployeeFileAdapter("employee_data.txt"))
     }
 
     @After

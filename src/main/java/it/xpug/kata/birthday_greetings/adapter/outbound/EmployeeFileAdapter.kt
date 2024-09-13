@@ -5,10 +5,10 @@ import it.xpug.kata.birthday_greetings.application.port.outbound.EmployeeProvide
 import java.io.BufferedReader
 import java.io.FileReader
 
-class EmployeeFileAdapter : EmployeeProvider {
+class EmployeeFileAdapter(val fileName: String) : EmployeeProvider {
     override fun getEmployees(): List<Employee> {
         val employees = mutableListOf<Employee>()
-        BufferedReader(FileReader("employee_data.txt")).use { reader ->
+        BufferedReader(FileReader(fileName)).use { reader ->
             reader.readLine() // skip header
             var str: String
 
