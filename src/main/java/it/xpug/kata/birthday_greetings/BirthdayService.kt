@@ -8,9 +8,8 @@ import javax.mail.Transport
 import javax.mail.internet.InternetAddress
 import javax.mail.internet.MimeMessage
 
-class BirthdayService {
-    fun sendGreetings(xDate: XDate, smtpHost: String, smtpPort: Int) {
-        val employeeFileAdapter: EmployeeFileAdapter = EmployeeFileAdapter()
+class BirthdayService(val employeeFileAdapter: EmployeeFileAdapter) {
+    fun sendGreetings(fileName: String, xDate: XDate, smtpHost: String, smtpPort: Int) {
         employeeFileAdapter.getEmployees().forEach { employee ->
             if (employee.isBirthday(xDate)) {
                 val recipient = employee.email

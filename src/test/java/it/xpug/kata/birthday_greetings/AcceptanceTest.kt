@@ -2,6 +2,7 @@ package it.xpug.kata.birthday_greetings
 
 import com.dumbster.smtp.SimpleSmtpServer
 import com.dumbster.smtp.SmtpMessage
+import it.xpug.kata.birthday_greetings.adapter.outbound.EmployeeFileAdapter
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
@@ -14,7 +15,7 @@ class AcceptanceTest {
     @Before
     fun setUp() {
         mailServer = SimpleSmtpServer.start(NONSTANDARD_PORT)
-        birthdayService = BirthdayService()
+        birthdayService = BirthdayService(EmployeeFileAdapter())
     }
 
     @After
@@ -26,7 +27,7 @@ class AcceptanceTest {
     @Test
     @Throws(Exception::class)
     fun willSendGreetings_whenItsSomebodysBirthday() {
-        birthdayService.sendGreetings(XDate("2008/10/08"), "localhost", NONSTANDARD_PORT)
+        birthdayService.sendGreetings("employee_data.txt", XDate("2008/10/08"), "localhost", NONSTANDARD_PORT)
 
         Assert.assertEquals("message not sent?", 1, mailServer.receivedEmailSize.toLong())
         val message = mailServer.receivedEmail.next() as SmtpMessage
@@ -40,7 +41,7 @@ class AcceptanceTest {
     @Test
     @Throws(Exception::class)
     fun willNotSendEmailsWhenNobodysBirthday() {
-        birthdayService.sendGreetings(XDate("2008/01/01"), "localhost", NONSTANDARD_PORT)
+        birthdayService.sendGreetings("employee_data.txt", XDate("2008/01/01"), "localhost", NONSTANDARD_PORT)
 
         Assert.assertEquals("what? messages?", 0, mailServer.receivedEmailSize.toLong())
     }
