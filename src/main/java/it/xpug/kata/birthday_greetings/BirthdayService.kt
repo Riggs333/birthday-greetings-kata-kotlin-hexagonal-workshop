@@ -1,6 +1,7 @@
 package it.xpug.kata.birthday_greetings
 
-import it.xpug.kata.birthday_greetings.adapter.outbound.EmployeeFileAdapter
+import it.xpug.kata.birthday_greetings.application.port.inbound.BirthdayGreetingPort
+import it.xpug.kata.birthday_greetings.application.port.outbound.EmployeeLoadingPort
 import java.util.Properties
 import javax.mail.Message
 import javax.mail.Session
@@ -8,12 +9,14 @@ import javax.mail.Transport
 import javax.mail.internet.InternetAddress
 import javax.mail.internet.MimeMessage
 
-class BirthdayService {
-    fun sendGreetings(fileName: String, xDate: XDate, smtpHost: String, smtpPort: Int) {
+class BirthdayService(private val employeeLoadingPort: EmployeeLoadingPort):BirthdayGreetingPort {
+Haaaallloooo :-P
 
-        val employeeFileAdapter = EmployeeFileAdapter(fileName)
 
-        val employees = employeeFileAdapter.loadEmployees()
+
+    fun sendGreetings(xDate: XDate, smtpHost: String, smtpPort: Int) {
+
+        val employees = employeeLoadingPort.loadEmployees()
 
         employees.forEach { employee ->
             if (employee.isBirthday(xDate)) {
