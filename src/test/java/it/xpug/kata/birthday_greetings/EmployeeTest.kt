@@ -1,6 +1,6 @@
 package it.xpug.kata.birthday_greetings
 
-import org.junit.Assert
+import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 
 class EmployeeTest {
@@ -8,8 +8,9 @@ class EmployeeTest {
     @Throws(Exception::class)
     fun testBirthday() {
         val employee = Employee("foo", "bar", "1990/01/31", "a@b.c")
-        Assert.assertFalse("not his birthday", employee.isBirthday(XDate("2008/01/30")))
-        Assert.assertTrue("his birthday", employee.isBirthday(XDate("2008/01/31")))
+
+        assertThat(employee.isBirthday(XDate("2008/01/30"))).isFalse()
+        assertThat(employee.isBirthday(XDate("2008/01/31"))).isTrue()
     }
 
     @Test
@@ -19,8 +20,8 @@ class EmployeeTest {
         val same = Employee("First", "Last", "1999/09/01", "first@last.com")
         val different = Employee("First", "Last", "1999/09/01", "boom@boom.com")
 
-        Assert.assertFalse(base == null)
-        Assert.assertTrue(base == same)
-        Assert.assertFalse(base == different)
+        assertThat(base).isNotNull()
+        assertThat(base).isEqualTo(same)
+        assertThat(base).isNotEqualTo(different)
     }
 }

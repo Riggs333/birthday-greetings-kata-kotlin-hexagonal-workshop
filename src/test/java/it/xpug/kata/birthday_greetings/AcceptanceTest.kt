@@ -2,9 +2,9 @@ package it.xpug.kata.birthday_greetings
 
 import com.dumbster.smtp.SimpleSmtpServer
 import com.dumbster.smtp.SmtpMessage
+import com.google.common.truth.Truth.assertThat
 import it.xpug.kata.birthday_greetings.adapter.outbound.EmployeeFileAdapter
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -29,17 +29,14 @@ class AcceptanceTest {
     fun willSendGreetings_whenItsSomebodysBirthday() {
         birthdayService.sendGreetings(XDate("2008/10/08"), "localhost", NONSTANDARD_PORT)
 
-        assertEquals(
-            1,
-            mailServer.receivedEmailSize.toLong(),
-            "message not sent?"
-        )
+        assertThat(mailServer.receivedEmailSize).isEqualTo(1)
         val message = mailServer.receivedEmail.next() as SmtpMessage
-        assertEquals("Happy Birthday, dear John!", message.body)
-        assertEquals("Happy Birthday!", message.getHeaderValue("Subject"))
+
+        assertThat(message.body).isEqualTo("Happy Birthday, dear John!")
+        assertThat(message.getHeaderValue("Subject")).isEqualTo("Happy Birthday!")
         val recipients = message.getHeaderValues("To")
-        assertEquals(1, recipients.size.toLong())
-        assertEquals("john.doe@foobar.com", recipients[0].toString())
+        assertThat(recipients).hasLength(1)
+        assertThat(recipients[0]).isEqualTo("john.doe@foobar.com")
     }
 
     @Test
@@ -47,11 +44,7 @@ class AcceptanceTest {
     fun willNotSendEmailsWhenNobodysBirthday() {
         birthdayService.sendGreetings(XDate("2008/01/01"), "localhost", NONSTANDARD_PORT)
 
-        assertEquals(
-            0,
-            mailServer.receivedEmailSize.toLong(),
-            "what? messages?"
-        )
+        assertThat(mailServer.receivedEmailSize).isEqualTo(0)
     }
 
     companion object {
