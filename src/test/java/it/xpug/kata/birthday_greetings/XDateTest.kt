@@ -1,39 +1,39 @@
 package it.xpug.kata.birthday_greetings
 
-import org.junit.Assert
+import com.google.common.truth.Truth.assertThat
 import org.junit.Test
+import java.time.Month
 
 class XDateTest {
     @Test
-    @Throws(Exception::class)
     fun getters() {
         val date = XDate("1789/01/24")
-        Assert.assertEquals(1, date.month.toLong())
-        Assert.assertEquals(24, date.day.toLong())
+
+        assertThat(date.month).isEqualTo(Month.JANUARY.value)
+        assertThat(date.day).isEqualTo(24L)
     }
 
     @Test
-    fun isSameDate(): Unit {
+    fun isSameDate() {
         val date = XDate("1789/01/24")
         val sameDay = XDate("2001/01/24")
         val notSameDay = XDate("1789/01/25")
         val notSameMonth = XDate("1789/02/25")
 
-        Assert.assertTrue("same", date.isSameDay(sameDay))
-        Assert.assertFalse("not same day", date.isSameDay(notSameDay))
-        Assert.assertFalse("not same month", date.isSameDay(notSameMonth))
+        assertThat(date.isSameDay(sameDay)).isTrue()
+        assertThat(date.isSameDay(notSameDay)).isFalse()
+        assertThat(date.isSameDay(notSameMonth)).isFalse()
     }
 
     @Test
-    @Throws(Exception::class)
     fun equality() {
         val base = XDate("2000/01/02")
         val same = XDate("2000/01/02")
         val different = XDate("2000/01/04")
 
-        Assert.assertFalse(base == null)
-        Assert.assertTrue(base == base)
-        Assert.assertTrue(base == same)
-        Assert.assertFalse(base == different)
+        assertThat(base).isNotNull()
+        assertThat(base).isEqualTo(base)
+        assertThat(base).isEqualTo(same)
+        assertThat(base).isNotEqualTo(different)
     }
 }

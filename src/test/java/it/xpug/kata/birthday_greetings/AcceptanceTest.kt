@@ -26,7 +26,7 @@ class AcceptanceTest {
 
     @Test
     @Throws(Exception::class)
-    fun willSendGreetings_whenItsSomebodysBirthday() {
+    fun willSendGreetings_whenItsSomebodiesBirthday() {
         birthdayService.sendGreetings(XDate("2008/10/08"), "localhost", NONSTANDARD_PORT)
 
         assertThat(mailServer.receivedEmailSize).isEqualTo(1)
@@ -41,7 +41,7 @@ class AcceptanceTest {
 
     @Test
     @Throws(Exception::class)
-    fun willNotSendEmailsWhenNobodysBirthday() {
+    fun willNotSendEmailsWhenNobodiesBirthday() {
         birthdayService.sendGreetings(XDate("2008/01/01"), "localhost", NONSTANDARD_PORT)
 
         assertThat(mailServer.receivedEmailSize).isEqualTo(0)
