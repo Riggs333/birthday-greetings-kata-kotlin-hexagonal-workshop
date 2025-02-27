@@ -1,45 +1,22 @@
 package it.xpug.kata.birthday_greetings
 
-import java.io.BufferedReader
-import java.io.FileReader
-import java.util.*
-import javax.mail.Message
-import javax.mail.Session
-import javax.mail.Transport
-import javax.mail.internet.InternetAddress
-import javax.mail.internet.MimeMessage
+import it.xpug.kata.birthday_greetings.ports.EmailService
+import it.xpug.kata.birthday_greetings.ports.EmployeeRepository
 
-class BirthdayService {
-    fun sendGreetings(fileName: String, xDate: XDate, smtpHost: String, smtpPort: Int) {
-        BufferedReader(FileReader(fileName)).use { reader ->
-            reader.readLine() // skip header
-            var str: String
-
-            while ((reader.readLine().also { str = it }) != null) {
-                val employeeData = str.split(", ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-                val employee = Employee(employeeData[1], employeeData[0], employeeData[2], employeeData[3])
-                if (employee.isBirthday(xDate)) {
-                    val recipient = employee.email
-                    val body = "Happy Birthday, dear %NAME%!".replace("%NAME%", employee.firstName!!)
-                    val subject = "Happy Birthday!"
-                    // Create a mail session
-                    val props = Properties()
-                    props["mail.smtp.host"] = smtpHost
-                    props["mail.smtp.port"] = "" + smtpPort
-                    val session = Session.getInstance(props, null)
-                    // Construct the message
-                    val msg: Message = MimeMessage(session)
-                    msg.setFrom(InternetAddress("sender@here.com"))
-                    msg.setRecipient(Message.RecipientType.TO, InternetAddress(recipient!!))
-                    msg.subject = subject
-                    msg.setText(body)
-                    // Send the message
-                    Thread.sleep(2000L) // simulate slow dependency
-                    Transport.send(msg)
-                }
+class BirthdayService(
+    private val employeeRepository: EmployeeRepository,
+    private val emailService: EmailService
+) {
+    fun sendGreetings(xDate: XDate) {
+        employeeRepository.findEmployees()
+            .filter { it.isBirthday(xDate) }
+            .forEach { employee ->
+                val body = "Happy Birthday, dear ${employee.firstName}!"
+                emailService.sendBirthdayGreeting(
+                    to = employee.email!!,
+                    subject = "Happy Birthday!",
+                    body = body
+                )
             }
-        }
-
     }
-
 }
