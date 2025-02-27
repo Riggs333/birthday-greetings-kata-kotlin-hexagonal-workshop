@@ -170,4 +170,20 @@ class FileEmployeeRepositoryTest {
         assertEquals("1982/10/08", employee.birthDate)
         assertEquals("john.doe@foobar.com", employee.email)
     }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun `should throw exception when file exists but is not readable`() {
+        // Given
+        val tempFile = createTempFile(prefix = "unreadable_", suffix = ".txt").toFile()
+        tempFile.writeText("""
+            last_name, first_name, date_of_birth, email
+            Doe, John, 1982/10/08, john.doe@foobar.com
+        """.trimIndent())
+        tempFile.setReadable(false)
+        
+        val repository = FileEmployeeRepository(tempFile.absolutePath)
+        
+        // When/Then
+        repository.findEmployees()
+    }
 } 

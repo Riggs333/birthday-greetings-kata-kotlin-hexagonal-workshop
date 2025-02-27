@@ -19,7 +19,12 @@ class FileEmployeeRepository(private val filePath: String) : EmployeeRepository 
             throw IllegalArgumentException("File ${file.path} does not exist")
         }
 
-        val lines = file.readLines()
+        val lines = try {
+            file.readLines()
+        } catch (e: Exception) {
+            throw IllegalArgumentException("Error reading file: ${e.message}", e)
+        }
+
         if (lines.isEmpty()) {
             return emptyList()
         }
