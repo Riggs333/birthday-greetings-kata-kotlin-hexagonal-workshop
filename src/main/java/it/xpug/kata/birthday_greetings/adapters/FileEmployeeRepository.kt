@@ -16,28 +16,26 @@ class FileEmployeeRepository(private val filePath: String) : EmployeeRepository 
     override fun findEmployees(): List<Employee> {
         val file = File(filePath)
         if (!file.exists()) {
-            throw IllegalArgumentException("File does not exist: $filePath")
+            throw IllegalArgumentException("File ${file.path} does not exist")
         }
-        
-        try {
-            BufferedReader(FileReader(file)).use { reader ->
-                val header = reader.readLine()?.trim() ?: throw IllegalArgumentException("File is empty")
-                
-                if (header != EXPECTED_HEADER) {
-                    throw IllegalArgumentException("Invalid file format: Expected header '$EXPECTED_HEADER' but found '$header'")
-                }
-                
-                return reader.lineSequence()
-                    .map { it.trim() }
-                    .filter { it.isNotEmpty() }
-                    .map { parseLine(it) }
-                    .toList()
-            }
-        } catch (e: FileNotFoundException) {
-            throw IllegalArgumentException("File not found: $filePath", e)
-        } catch (e: Exception) {
-            throw IllegalArgumentException("Error reading file: ${e.message}", e)
+
+        val lines = file.readLines()
+        if (lines.isEmpty()) {
+            return emptyList()
         }
+
+        val header = lines.first().trim()
+        if (header != EXPECTED_HEADER) {
+            throw IllegalArgumentException("Invalid file format. Expected header: $EXPECTED_HEADER")
+        }
+
+        val employees = lines.asSequence()
+            .drop(1)  // Skip header
+            .filter { it.isNotBlank() }
+            .map { parseLine(it) }
+            .toList()
+
+        return removeDuplicateEmployees(employees)
     }
     
     private fun parseLine(line: String): Employee {
@@ -67,5 +65,11 @@ class FileEmployeeRepository(private val filePath: String) : EmployeeRepository 
             birthDate = birthDate,
             email = email
         )
+    }
+
+    private fun removeDuplicateEmployees(employees: List<Employee>): List<Employee> {
+        return employees.distinctBy { 
+            Triple(it.firstName, it.lastName, it.birthDate) 
+        }
     }
 } 

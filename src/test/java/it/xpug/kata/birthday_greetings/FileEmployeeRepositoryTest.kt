@@ -144,4 +144,30 @@ class FileEmployeeRepositoryTest {
         // Then
         assertEquals(2, employees.size)
     }
+
+    @Test
+    fun `should ignore duplicate employee entries`() {
+        // Given
+        val tempFile = createTempFile(prefix = "duplicates_", suffix = ".txt").toFile()
+        tempFile.writeText("""
+            last_name, first_name, date_of_birth, email
+            Doe, John, 1982/10/08, john.doe@foobar.com
+            Doe, John, 1982/10/08, john.doe@foobar.com
+            Doe, John, 1982/10/08, john.doe@foobar.com
+        """.trimIndent())
+        
+        val repository = FileEmployeeRepository(tempFile.absolutePath)
+        
+        // When
+        val employees = repository.findEmployees()
+        
+        // Then
+        assertEquals("Should only contain one employee", 1, employees.size)
+        
+        val employee = employees[0]
+        assertEquals("John", employee.firstName)
+        assertEquals("Doe", employee.lastName)
+        assertEquals("1982/10/08", employee.birthDate)
+        assertEquals("john.doe@foobar.com", employee.email)
+    }
 } 
